@@ -1,0 +1,7 @@
+emoji
+indic-nlp-library
+pandas
+sklearn
+transformers
+torch
+-e .
