@@ -1,7 +1,7 @@
 emoji
 indic-nlp-library
 pandas
-sklearn
+scikit-learn
 transformers
 torch
 -e .

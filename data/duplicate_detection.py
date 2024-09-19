@@ -2,6 +2,7 @@ import re
 import pandas as pd
 import emoji
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from indicnlp.normalize.indic_normalize import IndicNormalizerFactory
 from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 from torch.utils.data import DataLoader, Dataset
@@ -89,6 +90,8 @@ def clean_text(text):
 # You can clean the original column if needed (if 'cleaned_tweet' is not already clean)
 df['cleaned_tweet'] = df['cleaned_tweet'].apply(clean_text)
 
+df['label']=0
+
 # Ensure you have a 'label' column for duplicate detection
 # If you don't have labels, you need to create a 'label' column manually.
 # E.g., 1 for duplicate, 0 for non-duplicate
@@ -104,7 +107,7 @@ print(f"Validation set size: {len(val_df)}")
 
 # Load pre-trained mBERT tokenizer and model for binary classification
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
-model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=2)
+model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-cased', num_labels=2).cuda()
 
 # Custom Dataset class for handling tweet pairs
 class TwitterDuplicateDataset(Dataset):
@@ -129,7 +132,6 @@ val_dataset = TwitterDuplicateDataset(val_df['cleaned_tweet'].tolist(), val_df['
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
 
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 # Optimizer and learning rate
 optimizer = AdamW(model.parameters(), lr=2e-5)
